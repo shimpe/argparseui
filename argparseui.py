@@ -22,6 +22,27 @@ __VERSION__ = "0.0.1"
 def comb(str1,  str2):
     return str1 + str2
 
+SINGLE = {
+    'int'     : 'an integer',
+    'float'   : 'a floating point number',
+    'str'     : 'a string',
+    'unicode' : 'a unicode string'
+    }
+
+MULTIPLE = {
+    'int'     : '%d integers',
+    'float'   : '%d floating point numbers',
+    'str'     : '%d strings',
+    'unicode' : '%d unicode strings'
+    }
+
+_OR_MORE = {
+    'int'     : ' or more integers',
+    'float'   : ' or more floating point numbers',
+    'str'     : ' or more strings',
+    'unicode' : ' or more unicode strings'
+    }
+
 class ArgparseUi(QtGui.QDialog):
     def __init__(self, parser, parent=None):
         super(ArgparseUi, self).__init__(parent)
@@ -153,17 +174,47 @@ class ArgparseUi(QtGui.QDialog):
             typehelp = "" # no need to explain as options are represented in a combo box
         else:
             rawtypename = self.extractTypename(a)
-            if rawtypename == "int":
-                typename = "an integer"
-            elif rawtypename == "float":
-                typename = "a floating point number"
-            elif rawtypename == "str":
-                typename = "a string"
-            elif rawtypename == "unicode":
-                typename = "a unicode string"
-            else:
+            nargs = a.nargs
+
+            try:
+              intargs = int(nargs)
+            except ValueError:
+              intargs = -1
+            except TypeError:
+              intargs = -1
+
+            if nargs == '1':
+              if rawtypename in SINGLE:
+                typename = SINGLE[rawtypename]
+              else:
                 typename = rawtypename
-            typehelp = " (" + typename + ")" if typename else ""
+            elif intargs > 0:
+              if rawtypename in MULTIPLE:
+                typename = MULTIPLE[rawtypename] % intargs
+              else:
+                typename = rawtypename
+            elif nargs == "*":
+              if rawtypename in _OR_MORE:
+                typename = "0" + _OR_MORE[rawtypename]
+              else:
+                typename = rawtypename
+            elif nargs == "+":
+              if rawtypename in _OR_MORE:
+                typename = "1" + _OR_MORE[rawtypename]
+              else:
+                typename = rawtypename
+            elif nargs == "?":
+              if rawtypename in SINGLE:
+                typename = SINGLE[rawtypename]
+              else:
+                typename = rawtypename
+            else:
+              if rawtypename in SINGLE:
+                typename = SINGLE[rawtypename]
+              else:
+                typename = rawtypename
+                
+            typehelp = " [" + typename + "]" if typename else ""
             
         return typehelp
 
@@ -418,6 +469,9 @@ if __name__ == "__main__":
     group.add_argument("-v", "--verbose", action="store_true")
     group.add_argument("-q", "--quiet", action="store_true")
     parser.add_argument("posarg", help="positional argument", type=str)
+    parser.add_argument('--foo', type=int,  nargs='+')
+    parser.add_argument('--bar', type=int,  nargs=2, metavar=('bar', 'baz'))
+
     app = QtGui.QApplication(sys.argv)
     a = ArgparseUi(parser)
     a.show()
