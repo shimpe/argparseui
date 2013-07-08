@@ -111,16 +111,16 @@ class ArgparseUi(QtGui.QDialog):
         for a in self.parser._get_optional_actions():
             try:
                 self.actionLookupTable[type(a)](a,  optional=True)
-                #print "Introspected type: {0}\n".format(a)
+                #print ("Introspected type: {0}\n".format(a))
             except KeyError:
-                print "Unsupported type: {0}\n".format(a)
+                print ("Unsupported type: {0}\n".format(a))
 
         for a in self.parser._get_positional_actions():
             try:
                 self.actionLookupTable[type(a)](a,  optional=False)
-                #print "Introspected type: {0}\n".format(a)
+                #print ("Introspected type: {0}\n".format(a))
             except KeyError:
-                print "Unsupported type: {0}\n".format(a)
+                print ("Unsupported type: {0}\n".format(a))
 
             
         self.addEpilog()
@@ -476,11 +476,13 @@ if __name__ == "__main__":
     a = ArgparseUi(parser)
     a.show()
     app.exec_()
-    print "Ok" if a.result() == 1 else "Cancel"
+    print ("Ok" if a.result() == 1 else "Cancel")
     if a.result() == 1: # Ok pressed
-        print a.makeCommandLine()
         parsed_args = a.parse_args()
-        print parsed_args
+    else:
+        parsed_args = None
+
+    print (parsed_args)
 
     # EXPERIMENT USING PARENT PARSER
     parent_parser = argparse.ArgumentParser(add_help=False)
@@ -492,8 +494,10 @@ if __name__ == "__main__":
     a = ArgparseUi(foo_parser)
     a.show()
     app.exec_()
-    print "Ok" if a.result() == 1 else "Cancel"
+    print ("Ok" if a.result() == 1 else "Cancel")
     if a.result() == 1: # Ok pressed
-        print a.makeCommandLine()
         parsed_args = a.parse_args()
-        print parsed_args
+    else:
+        parsed_args = None
+
+    print (parsed_args)
