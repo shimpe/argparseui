@@ -351,9 +351,32 @@ class ArgparseUi(QtGui.QDialog):
         else:
             include = QtGui.QLabel(helpstring,  self.options)
             
-        #self.commandLineArgumentCreators.append(self.createFunctionToMakeCountActionCommandLine(include,  tablewidget,  a))
+        self.commandLineArgumentCreators.append(self.createFunctionToMakeAppendCommandLine(include,  tablewidget,  a))
         self.optionsLayout.addRow(include,  tablewidget)
 
+    def createFunctionToMakeAppendCommandLine(self, include_widget, tablewidget, argument):
+        def to_command_line():
+            data = []
+            if type(include_widget) == type(QtGui.QCheckBox()):
+                checked = include_widget.isChecked()
+            else:
+                checked = True
+            if checked:
+                if type(tablewidget) == type(QtGui.QTableWidget()):
+                    if argument.option_strings:
+                        for c in range(tablewidget.columnCount()):
+                          cellText = "{0}".format(tablewidget.item(0,  c).text() if tablewidget.item(0,  c) else "")
+                          if cellText:
+                              data.extend([argument.option_strings[0], cellText])
+                    else:
+                        assert False # programming error
+                else:
+                    assert False # programming error
+            else:
+                return []
+            return data
+        return to_command_line           
+ 
 
     def makeCommandLine(self):
         commandline = []
