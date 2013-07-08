@@ -28,6 +28,15 @@ the UI has widgets that allow to set up the command line options
 
 argparseui depends on PyQt
 
+State of argparseui
+-------------------
+
+argparseui is a scratch-my-own-itch tool
+
+as such it doesn't support all possibilities of argparse
+
+use at your own risk, but feel free to log a bug/request
+
 Basic Parser Usage
 ------------------
 
