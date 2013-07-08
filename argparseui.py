@@ -75,10 +75,16 @@ class ArgparseUi(QtGui.QDialog):
         
         import argparse    
         self.actionLookupTable = { 
-                    type(argparse._HelpAction(None)) : self.makeHelpActionEntry, 
-                    type(argparse._StoreTrueAction(None, None)): self.makeStoreTrueEntry,
-                    type(argparse._StoreAction(None, None)) : self.makeStoreActionEntry, 
-                    type(argparse._CountAction(None, None)) : self.makeCountActionEntry, 
+                    type(argparse._HelpAction(None)) : self.makeHelpActionEntry,
+                    type(argparse._VersionAction(None)) : self.makeHelpActionEntry,                    
+                    type(argparse._StoreAction(None,None,None)): self.makeStoreConstEntry,
+                    type(argparse._StoreConstAction(None,None,None)): self.makeStoreConstEntry,
+                    type(argparse._StoreTrueAction(None, None)): self.makeStoreConstEntry,
+                    type(argparse._StoreFalseAction(None, None)): self.makeStoreConstEntry,
+                    type(argparse._StoreAction(None, None)) : self.makeStoreActionEntry,
+                    type(argparse._CountAction(None, None)) : self.makeCountActionEntry,
+                    type(argparse._AppendAction(None,None)) : self.makeAppendActionEntry,
+                    type(argparse._AppendConstAction(None, None, None)) : self.makeCountActionEntry
                     }
                     
         for a in self.parser._get_optional_actions():
@@ -173,7 +179,7 @@ class ArgparseUi(QtGui.QDialog):
         """
         pass
       
-    def makeStoreTrueEntry(self, a,  optional=True):
+    def makeStoreConstEntry(self, a,  optional=True):
         """
         make a dialog entry for a StoreTrue action
         (represented as a label)
@@ -184,9 +190,9 @@ class ArgparseUi(QtGui.QDialog):
         if a.default:
             include.setChecked(True)
         self.optionsLayout.addRow(include, rhslabel)
-        self.commandLineArgumentCreators.append(self.createFunctionToMakeStoreTrueEntryCommandLine(include,  a))
+        self.commandLineArgumentCreators.append(self.createFunctionToMakeStoreConstEntryCommandLine(include,  a))
     
-    def createFunctionToMakeStoreTrueEntryCommandLine(self,  include_widget,  a):
+    def createFunctionToMakeStoreConstEntryCommandLine(self,  include_widget,  a):
         def to_command_line():
             if type(include_widget) == type(QtGui.QCheckBox()):
                 checked = include_widget.isChecked()
@@ -300,6 +306,55 @@ class ArgparseUi(QtGui.QDialog):
                 return []
         return to_command_line           
             
+    def cleanupEmptyTableRows(self,  tablewidget):
+        def cleanup(row,  col):
+            data = []
+            tablewidget.blockSignals(True)
+            for c in range(tablewidget.columnCount()):
+                cellText = "{0}".format(tablewidget.item(0,  c).text() if tablewidget.item(0,  c) else "")
+                if cellText:
+                    data.append(cellText)
+            tablewidget.setColumnCount(len(data)+1)
+            for c, d in enumerate(data):
+                tablewidget.setItem(0, c,  QtGui.QTableWidgetItem(d))
+            tablewidget.setItem(0,  len(data),  QtGui.QTableWidgetItem(""))
+            tablewidget.blockSignals(False)
+        return cleanup
+    
+    def makeAppendActionEntry(self, a, optional=True):
+        helpstring = self.makeHelpString(a)
+        tablewidget = QtGui.QTableWidget(1, 1,  self.options)      
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(1)
+        sizePolicy.setVerticalStretch(1)
+        sizePolicy.setHeightForWidth(tablewidget.sizePolicy().hasHeightForWidth())
+        tablewidget.setSizePolicy(sizePolicy)
+        tablewidget.cellChanged.connect(self.cleanupEmptyTableRows(tablewidget))
+        tablewidget.verticalHeader().hide()
+        tablewidget.horizontalHeader().hide()
+
+        if a.default:
+            # add enough rows to hold default data + one empty row
+            cnt = tablewidget.columnCount()
+            needed = len(a.default)
+            if needed >= cnt:
+                for i in range(needed-cnt+1):
+                    tablewidget.insertColumn(tablewidget.columnCount())                    
+            for column,  d in enumerate(a.default):
+                tablewidget.setItem(0,  column,  QtGui.QTableWidgetItem(d))
+                pass
+            
+        if optional:
+            include = QtGui.QCheckBox(helpstring,  self.options)                                
+            self.disableOnClick(tablewidget)(False)
+            include.clicked.connect(self.disableOnClick(tablewidget))                
+        else:
+            include = QtGui.QLabel(helpstring,  self.options)
+            
+        #self.commandLineArgumentCreators.append(self.createFunctionToMakeCountActionCommandLine(include,  tablewidget,  a))
+        self.optionsLayout.addRow(include,  tablewidget)
+
+
     def makeCommandLine(self):
         commandline = []
         for c in self.commandLineArgumentCreators:
@@ -335,6 +390,7 @@ if __name__ == "__main__":
     parser.add_argument("-r","--restricted-number", help="one of a few possible numbers", type=int, choices=[1,2,3],  default=2)
     parser.add_argument("-c", "--counting-argument", help="counting #occurrences", action="count")
     parser.add_argument("-d", "--default-value-argument", help="default value argument", type=float, default="3.14")
+    parser.add_argument("-a", "--append-args",  help="append arguments to list",  type=str,  action="append",  default=["dish", "dash"])
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-v", "--verbose", action="store_true")
     group.add_argument("-q", "--quiet", action="store_true")
