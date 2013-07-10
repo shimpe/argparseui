@@ -117,7 +117,7 @@ class ArgparseUi(QtGui.QDialog):
 
         for a in self.parser._get_positional_actions():
             try:
-                self.actionLookupTable[type(a)](a,  optional=False)
+                self.actionLookupTable[type(a)](a,  optional=True)
                 #print ("Introspected type: {0}\n".format(a))
             except KeyError:
                 print ("Unsupported type: {0}\n".format(a))
