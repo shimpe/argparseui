@@ -435,11 +435,40 @@ class ArgparseUi(QtGui.QDialog):
             commandline.extend(c())
         return commandline
         
+    def hasOne(self,  list_of_possibilities,  cmdline):
+        for p in list_of_possibilities:
+            if p in cmdline:
+                return True
+        return False
+        
+    def validateMutualExclusiveOptions(self):
+        """
+        check if mutex options specified
+        """
+        cmdline = " ".join(self.makeCommandLine())
+        for m in self.parser._mutually_exclusive_groups:
+            foundOne = False
+            offending_options = []
+            for a in m._group_actions:
+                present = self.hasOne(a.option_strings,  cmdline)
+                if present and foundOne:
+                    offending_options.append(a.option_strings)
+                    return False,  offending_options
+                elif present:
+                    offending_options.append(a.option_strings)
+                    foundOne = True
+        return True,  []
+        
     def onOk(self):
         """
         handle ok button pressed
         """
-        self.accept()
+        validate,  offensive_options = self.validateMutualExclusiveOptions()
+        if validate:
+            self.accept()
+        else:
+            mutexes = "\n".join([",".join(o) for o in offensive_options])
+            QtGui.QMessageBox.question(self, 'Validation error',  "The following options are mutually exclusive:\n{0}".format(mutexes), QtGui.QMessageBox.Ok, QtGui.QMessageBox.Ok)
             
     def onCancel(self):
         """
