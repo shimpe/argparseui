@@ -15,6 +15,8 @@
 #      along with argparseui.  If not, see <http://www.gnu.org/licenses/>.   #
 ##############################################################################
 
+import textwrap
+
 from PyQt4 import QtCore, QtGui
 
 __VERSION__ = "0.0.1"
@@ -152,7 +154,7 @@ class ArgparseUi(QtGui.QDialog):
             helpstring += (" " + self.makeOptionString(a))
         else:
             helpstring += "positional argument"
-        return helpstring
+        return '\n'.join(textwrap.wrap(helpstring, 80))
         
     def makeOptionString(self,  a):
         """
