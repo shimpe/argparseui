@@ -156,7 +156,7 @@ class ArgparseUi(QtGui.QDialog):
             helpstring += "positional argument"
         return '\n'.join(textwrap.wrap(helpstring, 80))
         
-    def makeOptionString(self,  a):
+    def makeOptionString(self, a):
         """
         extract option strings as defined in argparse parser for use in the dialog
         """
@@ -164,10 +164,14 @@ class ArgparseUi(QtGui.QDialog):
         return the_options
             
     def extractTypename(self, a):
-        rawtypename = "{0}".format(a.type)[7:-2]
+        rawtypename = "{0}".format(a.type)
+        if 'type' in rawtypename:
+          return rawtypename[7:-2]
+        elif 'class' in rawtypename:
+          return rawtypename[8:-2]
         return rawtypename
         
-    def makeTypeHelp(self,  a):
+    def makeTypeHelp(self, a):
         """
         synthesize a human-readable string to describe the expected datatype
         """
