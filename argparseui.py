@@ -46,11 +46,14 @@ _OR_MORE = {
     }
 
 class ArgparseUi(QtGui.QDialog):
-    def __init__(self, parser, use_scrollbars=False, parent=None):
+    def __init__(self, parser, use_scrollbars=False, remove_defaults_from_helptext=False,
+                 helptext_default=' [default=%(default)s]', parent=None):
         super(ArgparseUi, self).__init__(parent)
         self.setWindowTitle("Make your choice")
         self.parser = parser
         self.use_scrollbars = use_scrollbars
+        self.remove_defaults_from_helptext = remove_defaults_from_helptext
+        self.helptext_default = helptext_default
         self.commandLineArgumentCreators = []
 
         self.mainLayout = QtGui.QVBoxLayout(self)
@@ -169,6 +172,9 @@ class ArgparseUi(QtGui.QDialog):
             helpstring += (" " + self.makeOptionString(a))
         else:
             helpstring += "positional argument"
+
+        if self.remove_defaults_from_helptext:
+            helpstring = helpstring.replace(self.helptext_default, '')
         return '\n'.join(textwrap.wrap(helpstring, 80))
         
     def makeOptionString(self, a):
