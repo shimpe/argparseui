@@ -240,10 +240,23 @@ class ArgparseUi(QtGui.QDialog):
                 typename = SINGLE[rawtypename]
               else:
                 typename = rawtypename
-                
+
             typehelp = " [" + typename + "]" if typename else ""
             
         return typehelp
+
+    def getValidator(self, a):
+        """
+        return a validator for a QLineEdit
+        """
+        validator = None
+        if not a.choices and a.nargs in [None, '1']:
+            rawtypename = self.extractTypename(a)
+            if rawtypename == 'int':
+                validator = QtGui.QIntValidator
+            elif rawtypename == 'float':
+                validator = QtGui.QDoubleValidator
+        return validator
 
     def disableOnClick(self, widget):
         def disable(state):
@@ -290,6 +303,7 @@ class ArgparseUi(QtGui.QDialog):
         """
         helpstring = self.makeHelpString(a)
         typehelp = self.makeTypeHelp(a)
+        validator = self.getValidator(a)
         if a.choices:
             combobox = QtGui.QComboBox(self.options)
             for c in a.choices:
@@ -311,6 +325,8 @@ class ArgparseUi(QtGui.QDialog):
             lineedit = QtGui.QLineEdit(self.options)
             if a.default is not None:
                 lineedit.setText("{0}".format(a.default))
+            if validator is not None:
+                lineedit.setValidator(validator(self))
             
             if optional:
                 include = QtGui.QCheckBox(comb(helpstring, typehelp), self.options)
