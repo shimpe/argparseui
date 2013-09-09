@@ -46,11 +46,14 @@ _OR_MORE = {
     }
 
 class ArgparseUi(QtGui.QDialog):
-    def __init__(self, parser, use_scrollbars=False, parent=None):
+    def __init__(self, parser, use_scrollbars=False, remove_defaults_from_helptext=False,
+                 helptext_default=' [default=%(default)s]', parent=None):
         super(ArgparseUi, self).__init__(parent)
         self.setWindowTitle("Make your choice")
         self.parser = parser
         self.use_scrollbars = use_scrollbars
+        self.remove_defaults_from_helptext = remove_defaults_from_helptext
+        self.helptext_default = helptext_default
         self.commandLineArgumentCreators = []
 
         self.mainLayout = QtGui.QVBoxLayout(self)
@@ -169,6 +172,9 @@ class ArgparseUi(QtGui.QDialog):
             helpstring += (" " + self.makeOptionString(a))
         else:
             helpstring += "positional argument"
+
+        if self.remove_defaults_from_helptext:
+            helpstring = helpstring.replace(self.helptext_default, '')
         return '\n'.join(textwrap.wrap(helpstring, 80))
         
     def makeOptionString(self, a):
@@ -197,47 +203,56 @@ class ArgparseUi(QtGui.QDialog):
             rawtypename = self.extractTypename(a)
             nargs = a.nargs
 
-            try:
-              intargs = int(nargs)
-            except ValueError:
-              intargs = -1
-            except TypeError:
-              intargs = -1
-
-            if nargs == '1':
-              if rawtypename in SINGLE:
-                typename = SINGLE[rawtypename]
-              else:
-                typename = rawtypename
-            elif intargs > 0:
-              if rawtypename in MULTIPLE:
-                typename = MULTIPLE[rawtypename] % intargs
-              else:
-                typename = rawtypename
-            elif nargs == "*":
-              if rawtypename in _OR_MORE:
-                typename = "0" + _OR_MORE[rawtypename]
-              else:
-                typename = rawtypename
-            elif nargs == "+":
-              if rawtypename in _OR_MORE:
-                typename = "1" + _OR_MORE[rawtypename]
-              else:
-                typename = rawtypename
-            elif nargs == "?":
-              if rawtypename in SINGLE:
-                typename = SINGLE[rawtypename]
-              else:
-                typename = rawtypename
+            if rawtypename in ['int', 'float'] and a.default is not None:
+                typename = ""
+            elif rawtypename == 'None':
+                typename = ""
             else:
-              if rawtypename in SINGLE:
-                typename = SINGLE[rawtypename]
-              else:
-                typename = rawtypename
-                
+                try:
+                  intargs = int(nargs)
+                except ValueError:
+                  intargs = -1
+                except TypeError:
+                  intargs = -1
+
+                if nargs == '1':
+                  typename = SINGLE.get(rawtypename, rawtypename)
+                elif intargs > 0:
+                  if rawtypename in MULTIPLE:
+                    typename = MULTIPLE[rawtypename] % intargs
+                  else:
+                    typename = rawtypename
+                elif nargs == "*":
+                  if rawtypename in _OR_MORE:
+                    typename = "0" + _OR_MORE[rawtypename]
+                  else:
+                    typename = rawtypename
+                elif nargs == "+":
+                  if rawtypename in _OR_MORE:
+                    typename = "1" + _OR_MORE[rawtypename]
+                  else:
+                    typename = rawtypename
+                elif nargs == "?":
+                  typename = SINGLE.get(rawtypename, rawtypename)
+                else:
+                  typename = SINGLE.get(rawtypename, rawtypename)
+
             typehelp = " [" + typename + "]" if typename else ""
             
         return typehelp
+
+    def getValidator(self, a):
+        """
+        return a validator for a QLineEdit
+        """
+        validator = None
+        if not a.choices and a.nargs in [None, '1']:
+            rawtypename = self.extractTypename(a)
+            if rawtypename == 'int':
+                validator = QtGui.QIntValidator
+            elif rawtypename == 'float':
+                validator = QtGui.QDoubleValidator
+        return validator
 
     def disableOnClick(self, widget):
         def disable(state):
@@ -284,6 +299,7 @@ class ArgparseUi(QtGui.QDialog):
         """
         helpstring = self.makeHelpString(a)
         typehelp = self.makeTypeHelp(a)
+        validator = self.getValidator(a)
         if a.choices:
             combobox = QtGui.QComboBox(self.options)
             for c in a.choices:
@@ -305,6 +321,8 @@ class ArgparseUi(QtGui.QDialog):
             lineedit = QtGui.QLineEdit(self.options)
             if a.default is not None:
                 lineedit.setText("{0}".format(a.default))
+            if validator is not None:
+                lineedit.setValidator(validator(self))
             
             if optional:
                 include = QtGui.QCheckBox(comb(helpstring, typehelp), self.options)
