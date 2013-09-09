@@ -203,43 +203,39 @@ class ArgparseUi(QtGui.QDialog):
             rawtypename = self.extractTypename(a)
             nargs = a.nargs
 
-            try:
-              intargs = int(nargs)
-            except ValueError:
-              intargs = -1
-            except TypeError:
-              intargs = -1
-
-            if nargs == '1':
-              if rawtypename in SINGLE:
-                typename = SINGLE[rawtypename]
-              else:
-                typename = rawtypename
-            elif intargs > 0:
-              if rawtypename in MULTIPLE:
-                typename = MULTIPLE[rawtypename] % intargs
-              else:
-                typename = rawtypename
-            elif nargs == "*":
-              if rawtypename in _OR_MORE:
-                typename = "0" + _OR_MORE[rawtypename]
-              else:
-                typename = rawtypename
-            elif nargs == "+":
-              if rawtypename in _OR_MORE:
-                typename = "1" + _OR_MORE[rawtypename]
-              else:
-                typename = rawtypename
-            elif nargs == "?":
-              if rawtypename in SINGLE:
-                typename = SINGLE[rawtypename]
-              else:
-                typename = rawtypename
+            if rawtypename in ['int', 'float'] and a.default is not None:
+                typename = ""
+            elif rawtypename == 'None':
+                typename = ""
             else:
-              if rawtypename in SINGLE:
-                typename = SINGLE[rawtypename]
-              else:
-                typename = rawtypename
+                try:
+                  intargs = int(nargs)
+                except ValueError:
+                  intargs = -1
+                except TypeError:
+                  intargs = -1
+
+                if nargs == '1':
+                  typename = SINGLE.get(rawtypename, rawtypename)
+                elif intargs > 0:
+                  if rawtypename in MULTIPLE:
+                    typename = MULTIPLE[rawtypename] % intargs
+                  else:
+                    typename = rawtypename
+                elif nargs == "*":
+                  if rawtypename in _OR_MORE:
+                    typename = "0" + _OR_MORE[rawtypename]
+                  else:
+                    typename = rawtypename
+                elif nargs == "+":
+                  if rawtypename in _OR_MORE:
+                    typename = "1" + _OR_MORE[rawtypename]
+                  else:
+                    typename = rawtypename
+                elif nargs == "?":
+                  typename = SINGLE.get(rawtypename, rawtypename)
+                else:
+                  typename = SINGLE.get(rawtypename, rawtypename)
 
             typehelp = " [" + typename + "]" if typename else ""
             
