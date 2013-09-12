@@ -39,6 +39,7 @@ use at your own risk, but feel free to log a bug/request
 
 Basic Parser Usage
 ------------------
+ ::
 
     import argparse
     import sys
