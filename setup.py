@@ -19,9 +19,13 @@
 
 from distutils.core import setup
 
+with open('README.txt') as f:
+      long_description = f.read()
+
 setup(name='argparseui',
-      version='0.0.1',
-      description='Auto-generated ui for argparse based scripts',
+      version='0.0.2',
+      description='Auto generate ui for argparse based command-line tools',
+      long_description=long_description,
       author='Stefaan Himpe',
       author_email='stefaan.himpe@gmail.com',
       url='https://github.com/shimpe/argparseui',
