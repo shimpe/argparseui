@@ -94,25 +94,17 @@ class ArgparseUi(QtGui.QDialog):
         self.epilogLayout = QtGui.QVBoxLayout(self.epilog)
         self.epilog.setLayout(self.epilogLayout)
         
-        self.OkButton = QtGui.QPushButton("Ok", self.buttons)
-        self.CancelButton = QtGui.QPushButton("Cancel", self.buttons)
+        if self.use_save_load_button:
+          self.LoadButton = self.addButton("Load options")
+
+        self.OkButton = self.addButton("Ok")
+        self.CancelButton= self.addButton("Cancel")
 
         if self.use_save_load_button:
-          self.LoadButton = QtGui.QPushButton("Load options", self.buttons)
-          self.SaveButton = QtGui.QPushButton("Save options", self.buttons)
-          self.SaveAsButton = QtGui.QPushButton("Save options as", self.buttons)
-          self.buttonsLayout.addSpacerItem(QtGui.QSpacerItem(20, 1, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum))
-          self.buttonsLayout.addWidget(self.LoadButton)
+          self.SaveButton = self.addButton("Save options")
+          self.SaveAsButton = self.addButton("Save options as")
+
         self.buttonsLayout.addSpacerItem(QtGui.QSpacerItem(20, 1, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum))
-        self.buttonsLayout.addWidget(self.OkButton)
-        self.buttonsLayout.addSpacerItem(QtGui.QSpacerItem(20, 1, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum))        
-        self.buttonsLayout.addWidget(self.CancelButton)
-        self.buttonsLayout.addSpacerItem(QtGui.QSpacerItem(20, 1, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum))
-        if self.use_save_load_button:
-          self.buttonsLayout.addWidget(self.SaveButton)
-          self.buttonsLayout.addSpacerItem(QtGui.QSpacerItem(20, 1, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum))
-          self.buttonsLayout.addWidget(self.SaveAsButton)
-          self.buttonsLayout.addSpacerItem(QtGui.QSpacerItem(20, 1, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum))
     
         self.OkButton.clicked.connect(self.onOk)
         self.CancelButton.clicked.connect(self.onCancel)
@@ -138,6 +130,12 @@ class ArgparseUi(QtGui.QDialog):
           self.mainLayout.addWidget(self.options)
         self.mainLayout.addWidget(self.epilog)
         self.mainLayout.addWidget(self.buttons)
+
+    def addButton(self, label):
+      self.buttonsLayout.addSpacerItem(QtGui.QSpacerItem(20, 1, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum))
+      b = QtGui.QPushButton(label, self.buttons)
+      self.buttonsLayout.addWidget(b)
+      return b
     
     def sizeHint(self):
       """
