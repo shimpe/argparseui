@@ -625,6 +625,20 @@ class ArgparseUi(QtGui.QDialog):
         """
         self.reject()
 
+    def resetAllWidgets(self, argparser):
+        helper = argparse.ArgumentParser(add_help=False, parents=[self.parser], fromfile_prefix_chars='@')
+        # make sure default values don't get enabled
+        for a in helper._get_optional_actions():
+          a.default = None
+        for a in helper._get_positional_actions():
+          a.default = None
+        # make sure all checkboxes that were already enabled are disabled first
+        for a in self.destToWidget:
+          for w in self.destToWidget[a]:
+            if type(w) == QtGui.QCheckBox:
+              w.setChecked(False)
+              w.clicked.emit(False)
+
     def onLoad(self):
         """
         handle load button pressed
@@ -632,18 +646,7 @@ class ArgparseUi(QtGui.QDialog):
         filename = QtGui.QFileDialog.getOpenFileName()
         if filename:
           helper = argparse.ArgumentParser(add_help=False, parents=[self.parser], fromfile_prefix_chars='@')
-          # make sure default values don't get enabled
-          for a in helper._get_optional_actions():
-            a.default = None
-          for a in helper._get_positional_actions():
-            a.default = None
-          # make sure all checkboxes that were already enabled are disabled first
-          for a in self.destToWidget:
-            for w in self.destToWidget[a]:
-              if type(w) == QtGui.QCheckBox:
-                w.setChecked(False)
-                w.clicked.emit(False)
-
+          self.resetAllWidgets(helper)
           result = helper.parse_args(['@{0}'.format(filename)])
           for a in helper._get_optional_actions():
             self.copyActionValuesToUi(a,result)
