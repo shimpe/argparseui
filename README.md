@@ -67,3 +67,23 @@ Basic Parser Usage
         print parsed_args            # print the parsed_options
 
     # Do what you like with the arguments...
+
+Extended features
+-----------------
+
+You can pass some extra command line arguments to ArgparseUi:
+
+  *helptext_default* = string [default: ' [default=%(default)s]']
+  this argument can be used to customize the default value annotations in the ui
+
+  *remove_defaults_from_helptext* = True/False [default: False]
+  if enabled, this option will remove the default value annotations from 
+  the labels in the ui
+
+  *use_save_load_button* = True/False [default: False]
+  if set to True, three extra buttons [Load options, Save Options, Save Options As] appear
+  the options are saved to (or loaded from) a command line option file in a file format compatible with 
+  argparse's built-in support for loading options from file
+
+  *use_scrollbars* = True/False [default: False]
+  if set to True, the options are embedded in a scrollable panel
