@@ -63,9 +63,9 @@ _OR_MORE = {
 
 class ArgparseUi(QtGui.QDialog):
     def __init__(self, parser, use_scrollbars=False, remove_defaults_from_helptext=False,
-                 helptext_default=' [default=%(default)s]', use_save_load_button=False, parent=None):
+                 helptext_default=' [default=%(default)s]', use_save_load_button=False, window_title="Make your choice", parent=None):
         super(ArgparseUi, self).__init__(parent)
-        self.setWindowTitle("Make your choice")
+        self.setWindowTitle(window_title)
         self.parser = parser
         self.use_scrollbars = use_scrollbars
         self.remove_defaults_from_helptext = remove_defaults_from_helptext
@@ -762,7 +762,7 @@ if __name__ == "__main__":
     foo_parser.add_argument('foo')
     foo_parser.description = "Come on! Let's bar that foo!!"
     foo_parser.epilog = "And this is how you bar a foo!"
-    a = ArgparseUi(foo_parser, use_scrollbars=False, use_save_load_button=True)
+    a = ArgparseUi(foo_parser, use_scrollbars=False, use_save_load_button=True, window_title="Simple config")
     a.show()
     app.exec_()
     print ("Ok" if a.result() == 1 else "Cancel")
