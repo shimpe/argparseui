@@ -89,3 +89,6 @@ You can pass some extra command line arguments to ArgparseUi::
   *use_scrollbars* = True/False [default: False]
   if set to True, the options are embedded in a scrollable panel
 
+  *window_title* = <a string> [default: "Make your choice"]
+  if set to a string, this string will be used as dialog title
+
