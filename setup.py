@@ -23,7 +23,7 @@ with open('README.txt') as f:
       long_description = f.read()
 
 setup(name='argparseui',
-      version='0.0.2',
+      version='0.0.3',
       description='Auto generate ui for argparse based command-line tools',
       long_description=long_description,
       author='Stefaan Himpe',
