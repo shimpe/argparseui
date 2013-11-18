@@ -15,3 +15,4 @@
 #      along with argparseui.  If not, see <http://www.gnu.org/licenses/>.   #
 ##############################################################################
 
+from .ui import ArgparseUi
