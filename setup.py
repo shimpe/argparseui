@@ -18,12 +18,13 @@
 #!/usr/bin/env python
 
 from distutils.core import setup
+from argparseui import __version__
 
 with open('README.txt') as f:
       long_description = f.read()
 
 setup(name='argparseui',
-      version='0.0.3',
+      version=__version__,
       description='Auto generate ui for argparse based command-line tools',
       long_description=long_description,
       author='Stefaan Himpe',
