@@ -91,3 +91,11 @@ You can pass some extra command line arguments to ArgparseUi:
   *window_title* = a string [default: "Make your choice"]
   if set to a string, this string will be used as dialog title
 
+Contributors
+------------
+
+The following people have contributed to argparseui:
+
+  * Stefaan Himpe
+  * Thomas Hisch
+
