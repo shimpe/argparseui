@@ -16,3 +16,4 @@
 ##############################################################################
 
 from .ui import ArgparseUi
+from .ui import __VERSION__ as __version__
