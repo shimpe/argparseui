@@ -15,3 +15,5 @@
 #      along with argparseui.  If not, see <http://www.gnu.org/licenses/>.   #
 ##############################################################################
 
+from .ui import ArgparseUi
+from .ui import __VERSION__ as __version__
