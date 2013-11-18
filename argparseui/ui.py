@@ -19,7 +19,7 @@ import textwrap
 
 from PyQt4 import QtCore, QtGui
 
-__VERSION__ = "0.0.1"
+__VERSION__ = "0.0.3"
 
 def comb(str1, str2):
     return str1 + str2
