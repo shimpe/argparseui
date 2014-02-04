@@ -663,7 +663,7 @@ class ArgparseUi(QtGui.QDialog):
           for w in self.destToWidget[a.dest]:
             data = result.__getattribute__(a.dest)
             if type(w) == QtGui.QCheckBox:
-              if data:
+              if data is not None:
                 w.setChecked(True)
                 w.clicked.emit(True)
             elif type(w) == QtGui.QLineEdit:
@@ -683,7 +683,7 @@ class ArgparseUi(QtGui.QDialog):
               w.setColumnCount(1)
               w.setItem(0, 0, QtGui.QTableWidgetItem(""))
               cnt = w.columnCount()
-              if data:
+              if data is not None:
                 needed = len(data)
                 if needed >= cnt:
                   for i in range(needed-cnt+1):
