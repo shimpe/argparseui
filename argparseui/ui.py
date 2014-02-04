@@ -16,6 +16,7 @@
 ##############################################################################
 
 import textwrap
+import argparse
 
 from PyQt4 import QtCore, QtGui
 
@@ -149,8 +150,6 @@ class ArgparseUi(QtGui.QDialog):
         and an ok and cancel button
         """
         self.addDescription()
-        
-        import argparse    
         self.actionLookupTable = { 
                     type(argparse._HelpAction(None)) : self.makeHelpActionEntry,
                     type(argparse._VersionAction(None)) : self.makeHelpActionEntry,                   
@@ -725,7 +724,6 @@ class ArgparseUi(QtGui.QDialog):
         return self.parser.parse_args(cmdline)
             
 if __name__ == "__main__":
-    import argparse
     import sys
     from PyQt4 import QtGui
     
