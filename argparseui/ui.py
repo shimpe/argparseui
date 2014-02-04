@@ -64,7 +64,8 @@ _OR_MORE = {
 
 class ArgparseUi(QtGui.QDialog):
     def __init__(self, parser, use_scrollbars=False, remove_defaults_from_helptext=False,
-                 helptext_default=' [default=%(default)s]', use_save_load_button=False, window_title="Make your choice", parent=None):
+                 helptext_default=' [default=%(default)s]', use_save_load_button=False, window_title="Make your choice", 
+                 left_label_alignment=None, parent=None):
         super(ArgparseUi, self).__init__(parent)
         self.setWindowTitle(window_title)
         self.parser = parser
@@ -85,6 +86,8 @@ class ArgparseUi(QtGui.QDialog):
         
         self.options = QtGui.QWidget(self)
         self.optionsLayout = QtGui.QFormLayout(self.options)
+        if left_label_alignment is not None:
+            self.optionsLayout.setLabelAlignment(QtCore.Qt.AlignLeft if left_label_alignment else QtCore.Qt.AlignRight)
         self.options.setLayout(self.optionsLayout)
 
         self.buttons = QtGui.QWidget(self)
