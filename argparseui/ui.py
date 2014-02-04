@@ -675,6 +675,9 @@ class ArgparseUi(QtGui.QDialog):
             elif type(w) == QtGui.QSpinBox:
               if data is not None:
                 w.setValue(int("{0}".format(data)))
+            elif type(w) == QtGui.QComboBox:
+              if data is not None:
+                w.setCurrentIndex(w.findText("{0}".format(data)))                
             elif type(w) == QtGui.QTableWidget:
               #clear existing defaults first
               w.setColumnCount(1)
