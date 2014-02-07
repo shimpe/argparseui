@@ -65,7 +65,7 @@ _OR_MORE = {
 class ArgparseUi(QtGui.QDialog):
     def __init__(self, parser, use_scrollbars=False, remove_defaults_from_helptext=False,
                  helptext_default=' [default=%(default)s]', use_save_load_button=False, window_title="Make your choice", 
-                 left_label_alignment=None, parent=None):
+                 left_label_alignment=None, ok_button_handler=None, cancel_button_handler=None, parent=None):
         super(ArgparseUi, self).__init__(parent)
         self.setWindowTitle(window_title)
         self.parser = parser
@@ -73,6 +73,8 @@ class ArgparseUi(QtGui.QDialog):
         self.remove_defaults_from_helptext = remove_defaults_from_helptext
         self.helptext_default = helptext_default
         self.use_save_load_button = use_save_load_button
+        self.ok_button_handler = ok_button_handler # function that takes two options: the ArgparseUi instance and "parsed options"
+        self.cancel_button_handler= cancel_button_handler # function that takes one option: the ArgparseUi instance
         self.commandLineArgumentCreators = []
         self.filename = None
         self.destToWidget = {}
@@ -624,7 +626,10 @@ class ArgparseUi(QtGui.QDialog):
         """
         validate, offensive_options = self.validateMutualExclusiveOptions()
         if validate:
-            self.accept()
+            if self.ok_button_handler is None:
+                self.accept()
+            else:
+                self.ok_button_handler(self)
         else:
             mutexes = "\n".join([",".join(o) for o in offensive_options])
             QtGui.QMessageBox.question(self, 'Validation error', "The following options are mutually exclusive:\n{0}".format(mutexes), QtGui.QMessageBox.Ok, QtGui.QMessageBox.Ok)
@@ -633,7 +638,10 @@ class ArgparseUi(QtGui.QDialog):
         """
         handle cancel button pressed
         """
-        self.reject()
+        if self.cancel_button_handler is None:
+            self.reject()
+        else:
+            self.cancel_button_handler(self)
 
     def resetAllWidgets(self, argparser):
         helper = argparse.ArgumentParser(add_help=False, parents=[self.parser], fromfile_prefix_chars='@')
