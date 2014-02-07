@@ -39,11 +39,12 @@ use at your own risk, but feel free to log a bug/request
 
 Basic Parser Usage
 ------------------
- ::
+::
 
     import argparse
     import sys
     from PyQt4 import QtGui
+    import argparseui
     
     # EXPERIMENT USING BASIC PARSER     
     parser = argparse.ArgumentParser()
@@ -59,7 +60,7 @@ Basic Parser Usage
     parser.add_argument("posarg", help="positional argument", type=str)
 
     app = QtGui.QApplication(sys.argv)
-    a = ArgparseUi(parser)
+    a = argparseui.ArgparseUi(parser)
     a.show()
     app.exec_()
 
@@ -69,6 +70,31 @@ Basic Parser Usage
 
     # Do what you like with the arguments...
 
+Example using save/load button and keeping the dialog open when pressing ok
+-----------------------------------------------------------------------------------------------------
+::
+
+    import argparse
+    import sys
+    from PyQt4 import QtGui
+    import argparseui
+
+    def do_something(argparseuiinstance):
+        options = argparseuiinstance.parse_args()
+        print ("Options: ", options)
+         
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--make-argument-true", help="optional boolean argument", action="store_true")
+    parser.add_argument("-o","--make-other-argument-true", help="optional boolean argument 2", action="store_true",  default=True)
+
+    app = QtGui.QApplication(sys.argv)
+    a =     argparseui.ArgparseUi(parser,use_save_load_button=True,ok_button_handler=do_something)
+    a.show()
+    app.exec_()
+    if a.result() != 1:
+        # Do what you like with the arguments...
+        print ("Cancel pressed")
+ 
 Extended features
 -----------------
 
@@ -77,11 +103,11 @@ You can pass some extra command line arguments to ArgparseUi::
   *helptext_default* = string [default: ' [default=%(default)s]']
   this argument can be used to customize the default value annotations in the ui
 
-  *remove_defaults_from_helptext* = True/False [default: False]
+  *remove\_defaults\_from_helptext* = True/False [default: False]
   if enabled, this option will remove the default value annotations from 
   the labels in the ui
 
-  *use_save_load_button* = True/False [default: False]
+  *use\_save\_load_button* = True/False [default: False]
   if set to True, three extra buttons [Load options, Save Options, Save Options As] appear
   the options are saved to (or loaded from) a command line option file in a file format compatible with 
   argparse's built-in support for loading options from file
@@ -89,8 +115,22 @@ You can pass some extra command line arguments to ArgparseUi::
   *use_scrollbars* = True/False [default: False]
   if set to True, the options are embedded in a scrollable panel
 
-  *window_title* = <a string> [default: "Make your choice"]
+  *window_title* = string [default: "Make your choice"]
   if set to a string, this string will be used as dialog title
+
+  *left\_label\_alignment* = True/False [default: None]
+  if set to True, the checkboxes are left-aligned. This may be useful on platforms 
+  like KDE or MacOsx which by default use right-alignment
+  
+  *ok\_button\_handler* = function taking one argument [default:None]
+  if set to None, the dialog will close upon clicking the ok button and its result will be set to 1
+  if set to a function accepting an ArgparseUi instance as argument, clicking ok will call that function 
+  with "self" as argument
+  
+  *cancel\_button\_handler* = function taking one argument [default:None]
+  if set to None, the dialog will close upon clicking cancel and its result will be != 1
+  if set to a function accepting an ArgparseUi instance as argument, clicking cancel will call that
+  function with "self" as argument
 
 Contributors
 ------------
@@ -99,6 +139,3 @@ The following people have contributed to argparseui
 
   * Stefaan Himpe
   * Thomas Hisch
-
-
-
