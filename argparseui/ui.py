@@ -648,6 +648,9 @@ class ArgparseUi(QtGui.QDialog):
             if type(w) == QtGui.QCheckBox:
               w.setChecked(False)
               w.clicked.emit(False)
+            elif type(w) == QtGui.QTableWidget:
+              w.setColumnCount(1)
+              w.setItem(0, 0, QtGui.QTableWidgetItem(""))
 
     def onLoad(self):
         """
@@ -675,8 +678,12 @@ class ArgparseUi(QtGui.QDialog):
             data = result.__getattribute__(a.dest)
             if type(w) == QtGui.QCheckBox:
               if data is not None:
-                w.setChecked(True)
-                w.clicked.emit(True)
+                if type(data) == bool:
+                    w.setChecked(data)
+                    w.clicked.emit(data)
+                else:
+                    w.setChecked(True)
+                    w.clicked.emit(True)
             elif type(w) == QtGui.QLineEdit:
               if data is not None:
                 if type(data) == type([]):
