@@ -379,7 +379,9 @@ class ArgparseUi(QtGui.QDialog):
                 
             if optional:
                 include = QtGui.QCheckBox(comb(helpstring, typehelp), self.options)
-                self.disableOnClick(combobox)(False)                
+                enabled = a.default is not None
+                include.setChecked(enabled)
+                self.disableOnClick(combobox)(enabled)                
                 include.clicked.connect(self.disableOnClick(combobox))                        
                 self.registerDisplayStateInfo(a.dest, [include])
             else:
@@ -398,7 +400,9 @@ class ArgparseUi(QtGui.QDialog):
             
             if optional:
                 include = QtGui.QCheckBox(comb(helpstring, typehelp), self.options)
-                self.disableOnClick(lineedit)(False)
+                enabled = a.default is not None
+                include.setChecked(enabled)
+                self.disableOnClick(lineedit)(enabled)
                 include.clicked.connect(self.disableOnClick(lineedit))        
                 self.registerDisplayStateInfo(a.dest, [include])
             else:
@@ -454,7 +458,9 @@ class ArgparseUi(QtGui.QDialog):
         spinbox.setValue(a.nargs)
         if optional:
             include = QtGui.QCheckBox(helpstring, self.options)                                
-            self.disableOnClick(spinbox)(False)
+            enabled = a.default is not None
+            include.setChecked(enabled)
+            self.disableOnClick(spinbox)(enabled)
             include.clicked.connect(self.disableOnClick(spinbox))                
             self.registerDisplayStateInfo(a.dest, [include])
         else:
@@ -535,7 +541,9 @@ class ArgparseUi(QtGui.QDialog):
             
         if optional:
             include = QtGui.QCheckBox(helpstring, self.options)                                
-            self.disableOnClick(tablewidget)(False)
+            enabled = a.default is not None
+            include.setChecked(enabled)           
+            self.disableOnClick(tablewidget)(enabled)
             include.clicked.connect(self.disableOnClick(tablewidget))                
             self.registerDisplayStateInfo(a.dest, [include])
         else:
