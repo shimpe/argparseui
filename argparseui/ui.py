@@ -351,7 +351,7 @@ class ArgparseUi(QtGui.QDialog):
         while building the ui)
         """
         def to_command_line():
-            if type(include_widget) == type(QtGui.QCheckBox()):
+            if type(include_widget) == QtGui.QCheckBox:
                 checked = include_widget.isChecked()
             else:
                 checked = True
@@ -415,12 +415,12 @@ class ArgparseUi(QtGui.QDialog):
         while building the ui)
         """
         def to_command_line():
-            if type(include_widget) == type(QtGui.QCheckBox()):
+            if type(include_widget) == QtGui.QCheckBox:
                 checked = include_widget.isChecked()
             else:
                 checked = True
             if checked:
-                if type(value_widget) == type(QtGui.QLineEdit()):
+                if type(value_widget) == QtGui.QLineEdit:
                     if argument.option_strings:
                         if argument.nargs == "1" or argument.nargs is None:
                           return ["{0}".format(argument.option_strings[0]),  
@@ -431,7 +431,7 @@ class ArgparseUi(QtGui.QDialog):
                           return cmd
                     else:
                         return ["{0}".format(value_widget.text())]
-                elif type(value_widget) == type(QtGui.QComboBox()):
+                elif type(value_widget) == QtGui.QComboBox:
                     if argument.option_strings:
                         return ["{0}".format(argument.option_strings[0]), 
                                      "{0}".format(value_widget.currentText())] 
@@ -472,12 +472,12 @@ class ArgparseUi(QtGui.QDialog):
         """
 
         def to_command_line():
-            if type(include_widget) == type(QtGui.QCheckBox()):
+            if type(include_widget) == QtGui.QCheckBox:
                 checked = include_widget.isChecked()
             else:
                 checked = True
             if checked:
-                if type(value_widget) == type(QtGui.QSpinBox()):
+                if type(value_widget) == QtGui.QSpinBox:
                     if argument.option_strings:
                         return [("{0}".format(argument.option_strings[0]))]*value_widget.value()
                     else:
@@ -553,12 +553,12 @@ class ArgparseUi(QtGui.QDialog):
         """
         def to_command_line():
             data = []
-            if type(include_widget) == type(QtGui.QCheckBox()):
+            if type(include_widget) == QtGui.QCheckBox:
                 checked = include_widget.isChecked()
             else:
                 checked = True
             if checked:
-                if type(tablewidget) == type(QtGui.QTableWidget()):
+                if type(tablewidget) == QtGui.QTableWidget:
                     if argument.option_strings:
                         for c in range(tablewidget.columnCount()):
                           cellText = "{0}".format(tablewidget.item(0, c).text() if tablewidget.item(0, c) else "")
