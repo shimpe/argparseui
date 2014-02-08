@@ -771,7 +771,7 @@ if __name__ == "__main__":
     parser.add_argument('--foo', type=int, nargs='+')
     parser.add_argument('--bar', type=int, nargs=2, metavar=('bar', 'baz'))
     app = QtGui.QApplication(sys.argv)
-    a = ArgparseUi(parser, use_scrollbars=True, use_save_load_button=True)
+    a = ArgparseUi(parser, left_label_alignment=True, use_scrollbars=True, use_save_load_button=True)
     a.show()
     app.exec_()
     print ("Ok" if a.result() == 1 else "Cancel")
