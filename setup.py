@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 ##############################################################################
 #      This file is part of argparseui.                                      #
 #                                                                            #
@@ -15,13 +17,11 @@
 #      along with argparseui.  If not, see <http://www.gnu.org/licenses/>.   #
 ##############################################################################
 
-#!/usr/bin/env python
-
 from distutils.core import setup
 from argparseui import __version__
 
 with open('README.txt') as f:
-      long_description = f.read()
+    long_description = f.read()
 
 setup(name='argparseui',
       version=__version__,
@@ -36,7 +36,4 @@ setup(name='argparseui',
                    'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
                    'Operating System :: OS Independent',
                    'Programming Language :: Python',
-                   'Topic :: Utilities'
-                  ])
-
-
+                   'Topic :: Utilities'])
