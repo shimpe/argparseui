@@ -15,6 +15,7 @@
 #      along with argparseui.  If not, see <http://www.gnu.org/licenses/>.   #
 ##############################################################################
 
+import re
 import textwrap
 import argparse
 
@@ -22,14 +23,16 @@ from PyQt4 import QtCore, QtGui
 
 __VERSION__ = "0.0.4"
 
+
 def comb(str1, str2):
     return str1 + str2
 
-import re
+
 try:
     _find_unsafe = re.compile(r'[^\w@%+=:,./-]', re.ASCII).search
 except:
     _find_unsafe = re.compile(r'[^\w@%+=:,./-]').search
+
 
 def quote(s):
     """Return a shell-escaped version of the string *s*."""
@@ -41,30 +44,32 @@ def quote(s):
     # the string $'b is then quoted as '$'"'"'b'
     return "'" + s.replace("'", "'\"'\"'") + "'"
 
+
 SINGLE = {
-    'int'     : 'an integer',
-    'float'   : 'a floating point number',
-    'str'     : 'a string',
-    'unicode' : 'a unicode string'
-    }
+    'int': 'an integer',
+    'float': 'a floating point number',
+    'str': 'a string',
+    'unicode': 'a unicode string'
+}
 
 MULTIPLE = {
-    'int'     : '%d integers',
-    'float'   : '%d floating point numbers',
-    'str'     : '%d strings',
-    'unicode' : '%d unicode strings'
-    }
+    'int': '%d integers',
+    'float': '%d floating point numbers',
+    'str': '%d strings',
+    'unicode': '%d unicode strings'
+}
 
 _OR_MORE = {
-    'int'     : ' or more integers',
-    'float'   : ' or more floating point numbers',
-    'str'     : ' or more strings',
-    'unicode' : ' or more unicode strings'
-    }
+    'int': ' or more integers',
+    'float': ' or more floating point numbers',
+    'str': ' or more strings',
+    'unicode': ' or more unicode strings'
+}
+
 
 class ArgparseUi(QtGui.QDialog):
     def __init__(self, parser, use_scrollbars=False, remove_defaults_from_helptext=False,
-                 helptext_default=' [default=%(default)s]', use_save_load_button=False, window_title="Make your choice", 
+                 helptext_default=' [default=%(default)s]', use_save_load_button=False, window_title="Make your choice",
                  left_label_alignment=None, ok_button_handler=None, cancel_button_handler=None, parent=None):
         super(ArgparseUi, self).__init__(parent)
         self.setWindowTitle(window_title)
@@ -73,19 +78,19 @@ class ArgparseUi(QtGui.QDialog):
         self.remove_defaults_from_helptext = remove_defaults_from_helptext
         self.helptext_default = helptext_default
         self.use_save_load_button = use_save_load_button
-        self.ok_button_handler = ok_button_handler # function that takes two options: the ArgparseUi instance and "parsed options"
-        self.cancel_button_handler= cancel_button_handler # function that takes one option: the ArgparseUi instance
+        self.ok_button_handler = ok_button_handler  # function that takes two options: the ArgparseUi instance and "parsed options"
+        self.cancel_button_handler = cancel_button_handler  # function that takes one option: the ArgparseUi instance
         self.commandLineArgumentCreators = []
         self.filename = None
         self.destToWidget = {}
 
         self.mainLayout = QtGui.QVBoxLayout(self)
         self.setLayout(self.mainLayout)
-        
+
         self.description = QtGui.QWidget(self)
         self.descriptionLayout = QtGui.QVBoxLayout(self.description)
         self.description.setLayout(self.descriptionLayout)
-        
+
         self.options = QtGui.QWidget(self)
         self.optionsLayout = QtGui.QFormLayout(self.options)
         if left_label_alignment is not None:
@@ -95,45 +100,45 @@ class ArgparseUi(QtGui.QDialog):
         self.buttons = QtGui.QWidget(self)
         self.buttonsLayout = QtGui.QHBoxLayout(self.buttons)
         self.buttons.setLayout(self.buttonsLayout)
-        
+
         self.epilog = QtGui.QWidget(self)
         self.epilogLayout = QtGui.QVBoxLayout(self.epilog)
         self.epilog.setLayout(self.epilogLayout)
-        
+
         if self.use_save_load_button:
           self.LoadButton = self.addButton("Load options")
 
         self.OkButton = self.addButton("Ok")
-        self.CancelButton= self.addButton("Cancel")
+        self.CancelButton = self.addButton("Cancel")
 
         if self.use_save_load_button:
           self.SaveButton = self.addButton("Save options")
           self.SaveAsButton = self.addButton("Save options as")
 
         self.buttonsLayout.addSpacerItem(QtGui.QSpacerItem(20, 1, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum))
-    
+
         self.OkButton.clicked.connect(self.onOk)
         self.CancelButton.clicked.connect(self.onCancel)
         if self.use_save_load_button:
           self.LoadButton.clicked.connect(self.onLoad)
           self.SaveButton.clicked.connect(self.onSave)
           self.SaveAsButton.clicked.connect(self.onSaveAs)
-  
+
         self.create_ui()
 
         self.mainLayout.addWidget(self.description)
         if self.use_scrollbars:
-          self.scrollableArea = QtGui.QScrollArea(self)
-          self.scrollableArea.setWidgetResizable(True)
-          self.scrollableArea.setEnabled(True)
-          self.scrollableArea.setFrameShape(QtGui.QFrame.NoFrame)
-          self.scrollableArea.setWidget(self.options)
-          self.mainLayout.addWidget(self.scrollableArea)
-          self.resize(self.sizeHint())
-          self.update()
-          self.updateGeometry()
+            self.scrollableArea = QtGui.QScrollArea(self)
+            self.scrollableArea.setWidgetResizable(True)
+            self.scrollableArea.setEnabled(True)
+            self.scrollableArea.setFrameShape(QtGui.QFrame.NoFrame)
+            self.scrollableArea.setWidget(self.options)
+            self.mainLayout.addWidget(self.scrollableArea)
+            self.resize(self.sizeHint())
+            self.update()
+            self.updateGeometry()
         else:
-          self.mainLayout.addWidget(self.options)
+            self.mainLayout.addWidget(self.options)
         self.mainLayout.addWidget(self.epilog)
         self.mainLayout.addWidget(self.buttons)
 
@@ -142,7 +147,7 @@ class ArgparseUi(QtGui.QDialog):
       b = QtGui.QPushButton(label, self.buttons)
       self.buttonsLayout.addWidget(b)
       return b
-    
+
     def sizeHint(self):
       """
       helps determining the initial size of the dialog when scrollbars are requested
@@ -155,47 +160,46 @@ class ArgparseUi(QtGui.QDialog):
         and an ok and cancel button
         """
         self.addDescription()
-        self.actionLookupTable = { 
-                    type(argparse._HelpAction(None)) : self.makeHelpActionEntry,
-                    type(argparse._VersionAction(None)) : self.makeHelpActionEntry,                   
-                    type(argparse._StoreAction(None,None,None)): self.makeStoreConstEntry,
-                    type(argparse._StoreConstAction(None,None,None)): self.makeStoreConstEntry,
-                    type(argparse._StoreTrueAction(None, None)): self.makeStoreConstEntry,
-                    type(argparse._StoreFalseAction(None, None)): self.makeStoreConstEntry,
-                    type(argparse._StoreAction(None, None)) : self.makeStoreActionEntry,
-                    type(argparse._CountAction(None, None)) : self.makeCountActionEntry,
-                    type(argparse._AppendAction(None,None)) : self.makeAppendActionEntry,
-                    type(argparse._AppendConstAction(None, None, None)) : self.makeCountActionEntry
-                    }
-                    
+        self.actionLookupTable = {
+            type(argparse._HelpAction(None)): self.makeHelpActionEntry,
+            type(argparse._VersionAction(None)): self.makeHelpActionEntry,
+            type(argparse._StoreAction(None, None, None)): self.makeStoreConstEntry,
+            type(argparse._StoreConstAction(None, None, None)): self.makeStoreConstEntry,
+            type(argparse._StoreTrueAction(None, None)): self.makeStoreConstEntry,
+            type(argparse._StoreFalseAction(None, None)): self.makeStoreConstEntry,
+            type(argparse._StoreAction(None, None)): self.makeStoreActionEntry,
+            type(argparse._CountAction(None, None)): self.makeCountActionEntry,
+            type(argparse._AppendAction(None, None)): self.makeAppendActionEntry,
+            type(argparse._AppendConstAction(None, None, None)): self.makeCountActionEntry
+        }
+
         for a in self.parser._get_optional_actions():
             try:
                 self.actionLookupTable[type(a)](a, optional=True)
-                #print ("Introspected type: {0}\n".format(a))
+                # print("Introspected type: {0}\n".format(a))
             except KeyError:
-                print ("Unsupported type: {0}\n".format(a))
+                print("Unsupported type: {0}\n".format(a))
 
         for a in self.parser._get_positional_actions():
             try:
                 self.actionLookupTable[type(a)](a, optional=True)
-                #print ("Introspected type: {0}\n".format(a))
+                # print("Introspected type: {0}\n".format(a))
             except KeyError:
-                print ("Unsupported type: {0}\n".format(a))
+                print("Unsupported type: {0}\n".format(a))
 
-            
         self.addEpilog()
-        
-    def addDescription(self):    
+
+    def addDescription(self):
         """
         add a description above the ui
         """
         if self.parser.description is not None:
-            descr  = self.parser.description
+            descr = self.parser.description
         else:
             descr = "<b>Choose which options to include, and define their value below</b>"
         label = QtGui.QLabel(descr)
         self.descriptionLayout.addWidget(label)
-        
+
     def addEpilog(self):
         """
         add an epilog text underneath the ui
@@ -206,14 +210,14 @@ class ArgparseUi(QtGui.QDialog):
             descr = "<b>This options dialog is auto-generated by argparseui {0}!</b>".format(__VERSION__)
         label = QtGui.QLabel(descr)
         self.epilogLayout.addWidget(label)
-        
+
     def makeHelpString(self, a):
         """
         extract help string for argparse parser and for use in the dialog
         """
         helpstring = ""
         if a.help:
-            helpstring += self.makeOptionString(a) + (" " + a.help)  
+            helpstring += self.makeOptionString(a) + (" " + a.help)
         elif a.option_strings:
             helpstring += (" " + self.makeOptionString(a))
         else:
@@ -222,14 +226,14 @@ class ArgparseUi(QtGui.QDialog):
         if self.remove_defaults_from_helptext:
             helpstring = helpstring.replace(self.helptext_default, '')
         return '\n'.join(textwrap.wrap(helpstring, 80))
-        
+
     def makeOptionString(self, a):
         """
         extract option strings as defined in argparse parser for use in the dialog
         """
         the_options = " ".join(a.option_strings)
         return the_options
-            
+
     def extractTypename(self, a):
         """
         given an argparse action, find out what datatype it expects
@@ -241,14 +245,14 @@ class ArgparseUi(QtGui.QDialog):
         elif 'class' in rawtypename:
           return rawtypename[8:-2]
         return rawtypename
-        
+
     def makeTypeHelp(self, a):
         """
         synthesize a human-readable string to describe the expected datatype
         """
         typehelp = "programming error"
         if a.choices:
-            typehelp = "" # no need to explain as options are represented in a combo box
+            typehelp = ""  # no need to explain as options are represented in a combo box
         else:
             rawtypename = self.extractTypename(a)
             nargs = a.nargs
@@ -288,7 +292,7 @@ class ArgparseUi(QtGui.QDialog):
                   typename = SINGLE.get(rawtypename, rawtypename)
 
             typehelp = " [" + typename + "]" if typename else ""
-            
+
         return typehelp
 
     def getValidator(self, a):
@@ -306,21 +310,21 @@ class ArgparseUi(QtGui.QDialog):
 
     def disableOnClick(self, widget):
         """
-        function that creates a function that can be 
+        function that creates a function that can be
         used to disable a given widget (used to generate
         clicked handlers on-the-fly)
         """
         def disable(state):
             widget.setEnabled(state)
         return disable
-  
+
     def makeHelpActionEntry(self, a, optional=True):
         """
         do not add the help action in the dialog
         since the dialog replaces the help action
         """
         pass
-      
+
     def registerDisplayStateInfo(self, dest, list_of_widgets):
         """
         registers backward dependency from option_string to widget;
@@ -345,11 +349,11 @@ class ArgparseUi(QtGui.QDialog):
         self.registerDisplayStateInfo(a.dest, [include])
         self.commandLineArgumentCreators.append(self.createFunctionToMakeStoreConstEntryCommandLine(include, a))
         self.registerDisplayStateInfo(a.dest, [include])
-    
+
     def createFunctionToMakeStoreConstEntryCommandLine(self, include_widget, a):
         """
         function to create a function that generates a command line string,
-        specialized for one given option (these functions are generated on-the-fly 
+        specialized for one given option (these functions are generated on-the-fly
         while building the ui)
         """
         def to_command_line():
@@ -357,16 +361,16 @@ class ArgparseUi(QtGui.QDialog):
                 checked = include_widget.isChecked()
             else:
                 checked = True
-            if checked:            
+            if checked:
                 return ["{0}".format(a.option_strings[0])]
             else:
                 return []
         return to_command_line
-    
+
     def makeStoreActionEntry(self, a, optional=True):
         """
         make a dialog entry for a StoreAction entry
-        (represented as combo box or line edit, depending on 
+        (represented as combo box or line edit, depending on
         choices being defined or not
         """
         helpstring = self.makeHelpString(a)
@@ -378,46 +382,46 @@ class ArgparseUi(QtGui.QDialog):
                 combobox.addItem("{0}".format(c))
             if a.default is not None:
                 combobox.setCurrentIndex(combobox.findText("{0}".format(a.default)))
-                
+
             if optional:
                 include = QtGui.QCheckBox(comb(helpstring, typehelp), self.options)
                 enabled = a.default is not None
                 include.setChecked(enabled)
-                self.disableOnClick(combobox)(enabled)                
-                include.clicked.connect(self.disableOnClick(combobox))                        
+                self.disableOnClick(combobox)(enabled)
+                include.clicked.connect(self.disableOnClick(combobox))
                 self.registerDisplayStateInfo(a.dest, [include])
             else:
                 include = QtGui.QLabel(comb(helpstring, typehelp), self.options)
 
             self.registerDisplayStateInfo(a.dest, [combobox])
-            self.commandLineArgumentCreators.append(self.createFunctionToMakeStoreEntryCommandLine(include, combobox, a))    
+            self.commandLineArgumentCreators.append(self.createFunctionToMakeStoreEntryCommandLine(include, combobox, a))
             self.optionsLayout.addRow(include, combobox)
-                
+
         else:
             lineedit = QtGui.QLineEdit(self.options)
             if a.default is not None:
                 lineedit.setText("{0}".format(a.default))
             if validator is not None:
                 lineedit.setValidator(validator(self))
-            
+
             if optional:
                 include = QtGui.QCheckBox(comb(helpstring, typehelp), self.options)
                 enabled = a.default is not None
                 include.setChecked(enabled)
                 self.disableOnClick(lineedit)(enabled)
-                include.clicked.connect(self.disableOnClick(lineedit))        
+                include.clicked.connect(self.disableOnClick(lineedit))
                 self.registerDisplayStateInfo(a.dest, [include])
             else:
                 include = QtGui.QLabel(comb(helpstring, typehelp), self.options)
-                
+
             self.registerDisplayStateInfo(a.dest, [lineedit])
             self.commandLineArgumentCreators.append(self.createFunctionToMakeStoreEntryCommandLine(include, lineedit, a))
             self.optionsLayout.addRow(include, lineedit)
-            
+
     def createFunctionToMakeStoreEntryCommandLine(self, include_widget, value_widget, argument):
         """
         function to create a function that generates a command line string,
-        specialized for one given option (these functions are generated on-the-fly 
+        specialized for one given option (these functions are generated on-the-fly
         while building the ui)
         """
         def to_command_line():
@@ -429,8 +433,8 @@ class ArgparseUi(QtGui.QDialog):
                 if type(value_widget) == QtGui.QLineEdit:
                     if argument.option_strings:
                         if argument.nargs == "1" or argument.nargs is None:
-                          return ["{0}".format(argument.option_strings[0]),  
-                                        "{0}".format(value_widget.text())]
+                          return ["{0}".format(argument.option_strings[0]),
+                                  "{0}".format(value_widget.text())]
                         else:
                           cmd = ["{0}".format(argument.option_strings[0])]
                           cmd.extend(["{0}".format(l) for l in "{0}".format(value_widget.text()).strip().split(" ")])
@@ -439,16 +443,16 @@ class ArgparseUi(QtGui.QDialog):
                         return ["{0}".format(value_widget.text())]
                 elif type(value_widget) == QtGui.QComboBox:
                     if argument.option_strings:
-                        return ["{0}".format(argument.option_strings[0]), 
-                                     "{0}".format(value_widget.currentText())] 
+                        return ["{0}".format(argument.option_strings[0]),
+                                "{0}".format(value_widget.currentText())]
                     else:
                         return ["{0}".format(value_widget.currentText())]
                 else:
-                    assert False # programming error
+                    assert False  # programming error
             else:
                 return []
         return to_command_line
-            
+
     def makeCountActionEntry(self, a, optional=True):
         """
         add an entry for a counting action
@@ -459,23 +463,23 @@ class ArgparseUi(QtGui.QDialog):
         spinbox.setRange(0, 100)
         spinbox.setValue(a.nargs)
         if optional:
-            include = QtGui.QCheckBox(helpstring, self.options)                                
+            include = QtGui.QCheckBox(helpstring, self.options)
             enabled = a.default is not None
             include.setChecked(enabled)
             self.disableOnClick(spinbox)(enabled)
-            include.clicked.connect(self.disableOnClick(spinbox))                
+            include.clicked.connect(self.disableOnClick(spinbox))
             self.registerDisplayStateInfo(a.dest, [include])
         else:
             include = QtGui.QLabel(helpstring, self.options)
-            
+
         self.registerDisplayStateInfo(a.dest, [spinbox])
         self.commandLineArgumentCreators.append(self.createFunctionToMakeCountActionCommandLine(include, spinbox, a))
         self.optionsLayout.addRow(include, spinbox)
-        
+
     def createFunctionToMakeCountActionCommandLine(self, include_widget, value_widget, argument):
         """
         function to create a function that generates a command line string,
-        specialized for one given option (these functions are generated on-the-fly 
+        specialized for one given option (these functions are generated on-the-fly
         while building the ui)
         """
 
@@ -487,19 +491,19 @@ class ArgparseUi(QtGui.QDialog):
             if checked:
                 if type(value_widget) == QtGui.QSpinBox:
                     if argument.option_strings:
-                        return [("{0}".format(argument.option_strings[0]))]*value_widget.value()
+                        return [("{0}".format(argument.option_strings[0]))] * value_widget.value()
                     else:
-                        assert False # programming error
+                        assert False  # programming error
                 else:
-                    assert False # programming error
+                    assert False  # programming error
             else:
                 return []
-        return to_command_line           
-            
+        return to_command_line
+
     def cleanupEmptyTableRows(self, tablewidget):
         """
         function to create a function that cleans up the unused columns of a tablewidget,
-        specialized for one given option (these functions are generated on-the-fly 
+        specialized for one given option (these functions are generated on-the-fly
         while building the ui)
         """
         def cleanup(row, col):
@@ -509,19 +513,19 @@ class ArgparseUi(QtGui.QDialog):
                 cellText = "{0}".format(tablewidget.item(0, c).text() if tablewidget.item(0, c) else "")
                 if cellText:
                     data.append(cellText)
-            tablewidget.setColumnCount(len(data)+1)
+            tablewidget.setColumnCount(len(data) + 1)
             for c, d in enumerate(data):
                 tablewidget.setItem(0, c, QtGui.QTableWidgetItem(d))
             tablewidget.setItem(0, len(data), QtGui.QTableWidgetItem(""))
             tablewidget.blockSignals(False)
         return cleanup
-    
+
     def makeAppendActionEntry(self, a, optional=True):
         """
         creates a table widget for appending arguments into a list
         """
         helpstring = self.makeHelpString(a)
-        tablewidget = QtGui.QTableWidget(1, 1, self.options)      
+        tablewidget = QtGui.QTableWidget(1, 1, self.options)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(1)
@@ -536,21 +540,21 @@ class ArgparseUi(QtGui.QDialog):
             cnt = tablewidget.columnCount()
             needed = len(a.default)
             if needed >= cnt:
-                for i in range(needed-cnt+1):
-                    tablewidget.insertColumn(tablewidget.columnCount())                    
+                for i in range(needed - cnt + 1):
+                    tablewidget.insertColumn(tablewidget.columnCount())
             for column, d in enumerate(a.default):
                 tablewidget.setItem(0, column, QtGui.QTableWidgetItem(d))
-            
+
         if optional:
-            include = QtGui.QCheckBox(helpstring, self.options)                                
+            include = QtGui.QCheckBox(helpstring, self.options)
             enabled = a.default is not None
-            include.setChecked(enabled)           
+            include.setChecked(enabled)
             self.disableOnClick(tablewidget)(enabled)
-            include.clicked.connect(self.disableOnClick(tablewidget))                
+            include.clicked.connect(self.disableOnClick(tablewidget))
             self.registerDisplayStateInfo(a.dest, [include])
         else:
             include = QtGui.QLabel(helpstring, self.options)
-            
+
         self.registerDisplayStateInfo(a.dest, [tablewidget])
         self.commandLineArgumentCreators.append(self.createFunctionToMakeAppendCommandLine(include, tablewidget, a))
         self.optionsLayout.addRow(include, tablewidget)
@@ -558,7 +562,7 @@ class ArgparseUi(QtGui.QDialog):
     def createFunctionToMakeAppendCommandLine(self, include_widget, tablewidget, argument):
         """
         function to create a function that generates a command line string,
-        specialized for one given option (these functions are generated on-the-fly 
+        specialized for one given option (these functions are generated on-the-fly
         while building the ui)
         """
         def to_command_line():
@@ -575,14 +579,13 @@ class ArgparseUi(QtGui.QDialog):
                           if cellText:
                               data.extend([argument.option_strings[0], cellText])
                     else:
-                        assert False # programming error
+                        assert False  # programming error
                 else:
-                    assert False # programming error
+                    assert False  # programming error
             else:
                 return []
             return data
-        return to_command_line           
- 
+        return to_command_line
 
     def makeCommandLine(self):
         """
@@ -592,7 +595,7 @@ class ArgparseUi(QtGui.QDialog):
         for c in self.commandLineArgumentCreators:
             commandline.extend(c())
         return commandline
-        
+
     def hasOne(self, list_of_possibilities, cmdline):
         """
         True if an element of list_of_possibilities occurs in cmdline
@@ -601,7 +604,7 @@ class ArgparseUi(QtGui.QDialog):
             if p in cmdline:
                 return True
         return False
-        
+
     def validateMutualExclusiveOptions(self):
         """
         check if mutex options specified
@@ -619,7 +622,7 @@ class ArgparseUi(QtGui.QDialog):
                     offending_options.append(a.option_strings)
                     foundOne = True
         return True, []
-        
+
     def onOk(self):
         """
         handle ok button pressed
@@ -633,7 +636,7 @@ class ArgparseUi(QtGui.QDialog):
         else:
             mutexes = "\n".join([",".join(o) for o in offensive_options])
             QtGui.QMessageBox.question(self, 'Validation error', "The following options are mutually exclusive:\n{0}".format(mutexes), QtGui.QMessageBox.Ok, QtGui.QMessageBox.Ok)
-            
+
     def onCancel(self):
         """
         handle cancel button pressed
@@ -670,15 +673,15 @@ class ArgparseUi(QtGui.QDialog):
           self.resetAllWidgets(helper)
           result = helper.parse_args(['@{0}'.format(filename)])
           for a in helper._get_optional_actions():
-            self.copyActionValuesToUi(a,result)
+            self.copyActionValuesToUi(a, result)
           for a in helper._get_positional_actions():
-            self.copyActionValuesToUi(a,result)
+            self.copyActionValuesToUi(a, result)
           self.filename = filename
 
     def copyActionValuesToUi(self, a, result):
         """
         function to update ui after loading command line arguments from file
-        a = argparse action 
+        a = argparse action
         result = argparse parse result
         """
         if a.dest in self.destToWidget:
@@ -703,38 +706,37 @@ class ArgparseUi(QtGui.QDialog):
                 w.setValue(int("{0}".format(data)))
             elif type(w) == QtGui.QComboBox:
               if data is not None:
-                w.setCurrentIndex(w.findText("{0}".format(data)))                
+                w.setCurrentIndex(w.findText("{0}".format(data)))
             elif type(w) == QtGui.QTableWidget:
-              #clear existing defaults first
-              w.setColumnCount(1)
-              w.setItem(0, 0, QtGui.QTableWidgetItem(""))
-              cnt = w.columnCount()
-              if data is not None:
-                needed = len(data)
-                if needed >= cnt:
-                  for i in range(needed-cnt+1):
-                    w.insertColumn(w.columnCount())                    
-                for column, d in enumerate(data):
-                  w.setItem(0, int("{0}".format(column)), QtGui.QTableWidgetItem(d))
+                # clear existing defaults first
+                w.setColumnCount(1)
+                w.setItem(0, 0, QtGui.QTableWidgetItem(""))
+                cnt = w.columnCount()
+                if data is not None:
+                    needed = len(data)
+                    if needed >= cnt:
+                        for i in range(needed - cnt + 1):
+                            w.insertColumn(w.columnCount())
+                    for column, d in enumerate(data):
+                        w.setItem(0, int("{0}".format(column)), QtGui.QTableWidgetItem(d))
 
     def onSave(self):
         """
         what to do when the save button is clicked
         """
-        if not self.filename: 
+        if not self.filename:
           self.onSaveAs()
         else:
           try:
             with open(self.filename, "w") as f:
               c = self.makeCommandLine()
               for line in c:
-                f.write(line+"\n")
+                f.write(line + "\n")
           except IOError:
             import os.path
             QtGui.QMessageBox.critical(self,
                                        "Critical",
                                        "Couldn't write to file {0}".format(os.path.abspath(self.filename)))
-
 
     def onSaveAs(self):
         """
@@ -744,24 +746,25 @@ class ArgparseUi(QtGui.QDialog):
         if filename:
           self.filename = filename
           self.onSave()
-        
+
     def parse_args(self):
         """
         method to ensure that the ui looks and feels identical to the argparse parser
         """
         cmdline = self.makeCommandLine()
         return self.parser.parse_args(cmdline)
-            
+
+
 if __name__ == "__main__":
     import sys
     from PyQt4 import QtGui
-    
-    # EXPERIMENT USING BASIC PARSER     
+
+    # EXPERIMENT USING BASIC PARSER
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--make-argument-true", help="optional boolean argument", action="store_true")
-    parser.add_argument("-o","--make-other-argument-true", help="optional boolean argument 2", action="store_true", default=True)
-    parser.add_argument("-n","--number", help="an optional number", type=int)
-    parser.add_argument("-r","--restricted-number", help="one of a few possible numbers", type=int, choices=[1,2,3], default=2)
+    parser.add_argument("-o", "--make-other-argument-true", help="optional boolean argument 2", action="store_true", default=True)
+    parser.add_argument("-n", "--number", help="an optional number", type=int)
+    parser.add_argument("-r", "--restricted-number", help="one of a few possible numbers", type=int, choices=[1, 2, 3], default=2)
     parser.add_argument("-c", "--counting-argument", help="counting #occurrences", action="count")
     parser.add_argument("-d", "--default-value-argument", help="default value argument with a very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very very long description", type=float, default="3.14")
     parser.add_argument("-a", "--append-args", help="append arguments to list", type=str, action="append", default=["dish", "dash"])
@@ -774,13 +777,13 @@ if __name__ == "__main__":
     a = ArgparseUi(parser, left_label_alignment=True, use_scrollbars=True, use_save_load_button=True)
     a.show()
     app.exec_()
-    print ("Ok" if a.result() == 1 else "Cancel")
-    if a.result() == 1: # Ok pressed
+    print("Ok" if a.result() == 1 else "Cancel")
+    if a.result() == 1:  # Ok pressed
         parsed_args = a.parse_args()
     else:
         parsed_args = None
 
-    print (parsed_args)
+    print(parsed_args)
 
     # EXPERIMENT USING PARENT PARSER
     parent_parser = argparse.ArgumentParser(add_help=False)
@@ -792,10 +795,10 @@ if __name__ == "__main__":
     a = ArgparseUi(foo_parser, use_scrollbars=False, use_save_load_button=True, window_title="Simple config")
     a.show()
     app.exec_()
-    print ("Ok" if a.result() == 1 else "Cancel")
-    if a.result() == 1: # Ok pressed
+    print("Ok" if a.result() == 1 else "Cancel")
+    if a.result() == 1:  # Ok pressed
         parsed_args = a.parse_args()
     else:
         parsed_args = None
 
-    print (parsed_args)
+    print(parsed_args)
