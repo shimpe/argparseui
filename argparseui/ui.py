@@ -757,7 +757,7 @@ class ArgparseUi(QtGui.QDialog):
 
 if __name__ == "__main__":
     import sys
-    from PyQt4 import QtGui
+    from PyQt5 import QtWidgets as QtGui
 
     # EXPERIMENT USING BASIC PARSER
     parser = argparse.ArgumentParser()
