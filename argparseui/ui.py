@@ -19,9 +19,9 @@ import re
 import textwrap
 import argparse
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets as QtGui
 
-__VERSION__ = "0.0.4"
+__VERSION__ = "0.0.4a"
 
 
 def comb(str1, str2):
