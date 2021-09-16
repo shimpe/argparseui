@@ -41,7 +41,7 @@ Basic Parser Usage
 ------------------
     import argparse
     import sys
-    from PyQt4 import QtGui
+    from PyQt5 import QtWidgets as GtGui
     import argparseui
     
     # EXPERIMENT USING BASIC PARSER     
