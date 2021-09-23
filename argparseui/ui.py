@@ -19,9 +19,13 @@ import re
 import textwrap
 import argparse
 
-from PyQt5 import QtCore, QtWidgets as QtGui
+# Try for Qt5, fall back to Qt4, fail if neither.
+try:
+    from PyQt5 import QtCore, QtWidgets as QtGui
+except ImportError:
+    from PyQt4 import QtCore, QtGui
 
-__VERSION__ = "0.0.4a"
+__VERSION__ = "0.0.4b"
 
 
 def comb(str1, str2):
