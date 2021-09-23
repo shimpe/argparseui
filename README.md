@@ -41,7 +41,10 @@ Basic Parser Usage
 ------------------
     import argparse
     import sys
-    from PyQt5 import QtWidgets as GtGui
+    try:
+        from PyQt5 import QtWidgets as GtGui
+    except ImportError:
+        from PyQt4 import GtGui
     import argparseui
     
     # EXPERIMENT USING BASIC PARSER     
@@ -72,7 +75,10 @@ Example using save/load button and keeping the dialog open when pressing ok
 -----------------------------------------------------------------------------------------------------
     import argparse
     import sys
-    from PyQt4 import QtGui
+        try:
+        from PyQt5 import QtWidgets as GtGui
+    except ImportError:
+        from PyQt4 import GtGui
     import argparseui
 
     def do_something(argparseuiinstance):
