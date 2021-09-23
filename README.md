@@ -75,7 +75,7 @@ Example using save/load button and keeping the dialog open when pressing ok
 -----------------------------------------------------------------------------------------------------
     import argparse
     import sys
-        try:
+    try:
         from PyQt5 import QtWidgets as GtGui
     except ImportError:
         from PyQt4 import GtGui
