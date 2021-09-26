@@ -19,9 +19,13 @@ import re
 import textwrap
 import argparse
 
-from PyQt4 import QtCore, QtGui
+# Try for Qt5, fall back to Qt4, fail if neither.
+try:
+    from PyQt5 import QtCore, QtWidgets as QtGui
+except ImportError:
+    from PyQt4 import QtCore, QtGui
 
-__VERSION__ = "0.0.4"
+__VERSION__ = "0.0.4b"
 
 
 def comb(str1, str2):
@@ -756,8 +760,7 @@ class ArgparseUi(QtGui.QDialog):
 
 
 if __name__ == "__main__":
-    import sys
-    from PyQt4 import QtGui
+    from sys import argv
 
     # EXPERIMENT USING BASIC PARSER
     parser = argparse.ArgumentParser()
@@ -773,7 +776,7 @@ if __name__ == "__main__":
     group.add_argument("-q", "--quiet", action="store_true")
     parser.add_argument('--foo', type=int, nargs='+')
     parser.add_argument('--bar', type=int, nargs=2, metavar=('bar', 'baz'))
-    app = QtGui.QApplication(sys.argv)
+    app = QtGui.QApplication(argv)
     a = ArgparseUi(parser, left_label_alignment=True, use_scrollbars=True, use_save_load_button=True)
     a.show()
     app.exec_()
