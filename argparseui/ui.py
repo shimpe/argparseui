@@ -25,7 +25,7 @@ try:
 except ImportError:
     from PyQt4 import QtCore, QtGui
 
-__VERSION__ = "0.0.4b"
+__VERSION__ = "0.0.5"
 
 
 def comb(str1, str2):
