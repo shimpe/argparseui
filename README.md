@@ -139,6 +139,7 @@ Contributors
 
 The following people have contributed to argparseui
 
-  * Stefaan Himpe
-  * Thomas Hisch
+  * Stefaan Himpe (github user shimpe)
+  * Thomas Hisch (github user thisch)
+  * Graham (github user 4gra)
 
